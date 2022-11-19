@@ -8,6 +8,7 @@ pnpm-debug.log*
 lerna-debug.log*
 
 *.xlsx
+*.xls
 exception.py
 node_modules
 dist

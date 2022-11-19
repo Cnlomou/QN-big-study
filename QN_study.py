@@ -3,6 +3,7 @@ import requests
 import xlrd
 from numpy.core.defchararray import isdigit
 import os
+
 requests.packages.urllib3.disable_warnings()
 tittle = '''
 ####################################################################
@@ -38,7 +39,6 @@ github:https://github.com/ygxiuming/QN-big-study
 '''
 
 
-
 def get_mes(pid):
     url = f"http://www.jxqingtuan.cn/pub/vol/config/organization?pid={pid}"
 
@@ -69,7 +69,8 @@ def get_mes(pid):
         id = i['id']
         k["{}".format(tittle)] = id
     num = list(k.values())
-    return k,num
+    return k, num
+
 
 def id_getinfo():
     list_tittle = {"团省委机关": "N0017",
@@ -89,9 +90,9 @@ def id_getinfo():
                    "吉安市": "N0011",
                    "抚州市": "N0012"
                    }
-   #第一级
-    t=0
-    while(1):
+    # 第一级
+    t = 0
+    while (1):
         if t == 0:
             i = 0
             samp = list(list_tittle.values())
@@ -109,20 +110,21 @@ def id_getinfo():
         elif t == 'q':
             break
         else:
-            list1,num = get_mes(pid)
+            list1, num = get_mes(pid)
             i = 0
             for k in list1:
-                print(str(i+1) + "." + str(k) + ":" + str(list1[k]))
+                print(str(i + 1) + "." + str(k) + ":" + str(list1[k]))
                 i = i + 1
             t = input("请输入对应序号(输入0重新查询,输入q退出查询！):")
             if isdigit(t):
                 t = int(t)
             else:
                 break
-            if t !=0 :
+            if t != 0:
                 pid = num[t - 1]
             else:
                 pass
+
 
 def getIDInfo():
     url = "http://www.jxqingtuan.cn/pub/vol/config/organization?pid=" + nid
@@ -154,6 +156,7 @@ def getStudy(course, nid, subOrg, cardNo):
         text = ("提交大学习导致未知错误：" + res.text)
         return text
 
+
 def gettittle():
     global datas
     url = "http://www.jxqingtuan.cn/pub/vol/volClass/current"
@@ -161,34 +164,36 @@ def gettittle():
     res = json.loads(res)
     id = res["result"]["id"]
     tittle = res["result"]["title"]
-    url =  res["result"]["uri"]
+    url = res["result"]["uri"]
     t = "第{}期".format(id) + tittle
-    print("第{}期".format(id) + "青年大学习标题：" + tittle   + "\n" + "青年大学习学习链接：" + url)
-    return id,t,url
+    print("第{}期".format(id) + "青年大学习标题：" + tittle + "\n" + "青年大学习学习链接：" + url)
+    return id, t, url
 
-def sav_image(url,tittle):
+
+def sav_image(url, tittle):
     s = s = url.split('/')[-2]
-    img_url = 'https://h5.cyol.com/special/daxuexi/%s/images/end.jpg'%s
+    img_url = 'https://h5.cyol.com/special/daxuexi/%s/images/end.jpg' % s
     print('青年大学习学习截图：' + img_url)
     if os.path.exists('./青年大学习学习截图'):
         pass
     else:
         os.makedirs('./青年大学习学习截图')
 
-    img = requests.get(img_url,verify=False)
-    f = open('./青年大学习学习截图/%s.jpg'%tittle, 'ab')  # 存储图片，多媒体文件需要参数b（二进制文件）
+    img = requests.get(img_url, verify=False)
+    f = open('./青年大学习学习截图/%s.jpg' % tittle, 'ab')  # 存储图片，多媒体文件需要参数b（二进制文件）
     f.write(img.content)  # 多媒体存储content
     f.close()
 
 
-def QNstudy():
-    id,tit,url_study = gettittle()
+def QNstudy(isTip: bool = True):
+    id, tit, url_study = gettittle()
     data_excel = xlrd.open_workbook('名单.xls')
     table = data_excel.sheets()[0]  # 通过索引顺序获取
     nid_list = table.col_values(colx=0)
-    optionend = input("是否生成学习截图(是输入1，否输入0：")
-    for i in range(1,len(nid_list)):
-        text = table.row_values(i,start_colx=0,end_colx=None)
+    if isTip:
+        optionend = input("是否生成学习截图(是输入1，否输入0：")
+    for i in range(1, len(nid_list)):
+        text = table.row_values(i, start_colx=0, end_colx=None)
         if text[2] == '':
             sub = '四级组织'
         else:
@@ -209,9 +214,9 @@ def QNstudy():
  #################################################################
 '''
         print(message)
-        if optionend == '1':
+        if isTip and optionend == '1':
             sav_image(url_study, name)
-            print(name,'青年大学习截图保存成功！')
+            print(name, '青年大学习截图保存成功！')
         else:
             pass
 
@@ -245,7 +250,7 @@ if __name__ == '__main__':
         while 1:
             print(model)
             mod = int(input("请输入选择模式序号："))
-            if mod == 1 :
+            if mod == 1:
                 id_getinfo()
                 print("已返回模块选择界面！！！")
             else:
